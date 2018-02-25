@@ -58,9 +58,9 @@ int main(int argc, char **argv) {
     perror("Could not start seccomp:");
     exit(1);
   }
-  printf("hi hi\n");
 
-  // whining about not being able to find a config
+  // there is a way to inspect was system calls are actually needed. Kees
+  // discusses it at https://outflux.net/teach-seccomp/
   ConvertImageCommand(NULL, 1, NULL, NULL, NULL);
 }
 
