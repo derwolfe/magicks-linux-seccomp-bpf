@@ -20,14 +20,17 @@ int install_seccomp() {
   int rc = -1;
 
   scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_KILL);
+  // reject all by default
   rc = seccomp_arch_add(ctx, SCMP_ARCH_X86);
-  if (rc != 0) { goto out; };
-  rc = seccomp_arch_add(ctx, SCMP_ARCH_X86_64);
-  if (rc != 0) { goto out; };
+  if (rc != 0) {
+    goto out;
+  };
 
   // simple rules, break printf
   rc = seccomp_load(ctx);
-  if (rc != 0) { goto out; };
+  if (rc != 0) {
+    goto out;
+  };
 
   return 0;
 
@@ -50,7 +53,7 @@ int main(int argc, char **argv) {
 
   int ret = install_seccomp();
   if (ret != 0) {
-    printf("hi\n");
+    printf("failed\n");
     exit(1);
   }
 
