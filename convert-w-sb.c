@@ -13,7 +13,7 @@
 #include <linux/seccomp.h>
 #include <linux/audit.h>
 
-#include <ImageMagick-7/MagickWand/MagickWand.h>
+#include <ImageMagick-6/wand/MagickWand.h>
 
 #define ArchField offsetof(struct seccomp_data, arch)
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
   printf("hi hi\n");
 
   // whining about not being able to find a config
-  ConvertImageCommand(NULL, NULL, NULL, NULL, NULL);
+  ConvertImageCommand(NULL, 1, NULL, NULL, NULL);
 }
 
 // mostly taken from https://eigenstate.org/notes/seccomp
