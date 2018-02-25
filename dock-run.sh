@@ -1,1 +1,1 @@
-docker run --rm -it -v ~/Code/img/:/sb-fun sb-dev:latest bash
+docker run --rm -it -v $(pwd):/magick-sb sb-dev:latest bash

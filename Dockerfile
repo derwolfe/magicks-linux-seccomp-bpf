@@ -6,7 +6,4 @@ RUN apt update && apt install -y \
     make pkg-config man \
     libmagickwand-dev imagemagick
 
-# RUN git clone --depth 1 https://github.com/ImageMagick/ImageMagick /tmp/ImageMagick
-# RUN cd /tmp/ImageMagick && ./configure --enable-shared && make -j$(nproc) && make install && cd /
-
-WORKDIR sb-fun
+WORKDIR magick-sb
