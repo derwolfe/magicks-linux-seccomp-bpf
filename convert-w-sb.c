@@ -11,166 +11,34 @@
 
 #include <linux/audit.h>
 #include <linux/filter.h>
-
-#include <seccomp.h>
+#include <linux/seccomp.h>
 
 #include <ImageMagick-6/wand/MagickWand.h>
 
-int install_seccomp(char *path_a, char *path_b) {
-  int rc = -1;
-  // reject all by default
-  scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_TRAP);
-  if (ctx == NULL) {
-    return -1;
+#define syscall_arg(_n) (offsetof(struct seccomp_data, args[_n]))
+#define syscall_nr (offsetof(struct seccomp_data, nr))
+
+int start_sb(char *path_a, char *path_b) {
+  struct sock_filter filter[] = {
+    //BPF_STMT(BPF_LD + BPF_W + BPF_ABS, syscall_nr),
+    //BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, __NR_rt_sigreturn, 0, 1),
+    BPF_STMT(BPF_RET + BPF_K, SECCOMP_RET_ALLOW),
+  };
+
+  struct sock_fprog prog = {
+      .len = (unsigned short)(sizeof(filter) / sizeof(filter[0])),
+      .filter = filter,
+  };
+
+  if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog)) {
+    perror("prctl");
+    return 1;
   }
-
-  rc = seccomp_arch_add(ctx, SCMP_ARCH_X86);
-  if (rc != 0) {
-    goto out;
-  };
-  // there must be a better way to add these.
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 1,
-                        SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_b));
-  if (rc != 0) {
-    goto out;
-  };
-
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 1,
-                        SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_a));
-  if (rc != 0) {
-    goto out;
-  };
-
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 1,
-                        SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_b));
-  if (rc != 0) {
-    goto out;
-  };
-
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(creat), 1,
-                        SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_b));
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(access), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(arch_prctl), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(futex), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getcwd), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getdents), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getrlimit), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(gettimeofday), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(futex), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(readlink), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigaction), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigprocmask), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sched_getaffinity), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_robust_list), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_tid_address), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(stat), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sysinfo), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(times), 0);
-  if (rc != 0) {
-    goto out;
-  };
-
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_load(ctx);
-  if (rc != 0) {
-    goto out;
-  };
-
+  if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
+    perror("prctl(NO_NEW_PRIVS)");
+    return 1;
+  }
   return 0;
-
-out:
-  seccomp_release(ctx);
-  return -1;
 }
 
 void convert_image(char *infile, char *outfile) {
@@ -210,7 +78,7 @@ int main(int argc, char **argv) {
   char *from = "diaper.jpg";
   char *to = "tiny_diaper.jpg";
 
-  int sc = install_seccomp(to, from);
+  int sc = start_sb(to, from);
   if (sc != 0) {
     printf("failed\n");
     exit(1);
