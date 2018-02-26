@@ -19,8 +19,8 @@
 int install_seccomp() {
   int rc = -1;
 
-  scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_KILL);
   // reject all by default
+  scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_KILL);
   rc = seccomp_arch_add(ctx, SCMP_ARCH_X86);
   if (rc != 0) { goto out; };
 
@@ -39,6 +39,9 @@ int install_seccomp() {
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
   if (rc != 0) { goto out; };
 
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 1,
+                        SCMP_A0(SCMP_CMP_EQ, STDERR_FILENO));
+  if (rc != 0) { goto out; };
   rc = seccomp_load(ctx);
   if (rc != 0) { goto out; };
 
@@ -49,14 +52,32 @@ int install_seccomp() {
   return -1;
 }
 
-int main(int argc, char **argv) {
+void convert_image(int argc, char **argv) {
+  MagickWand
+    *wand,
+    *input,
+    *output;
 
-  int ret = install_seccomp();
-  if (ret != 0) {
-    printf("failed\n");
-    exit(1);
-  }
+  MagickBooleanType
+    status;
+  MagickWandGenesis();
+
+  wand = NewMagickWand();
   ConvertImageCommand(NULL, 1, NULL, NULL, NULL);
 }
 
-// mostly taken from https://eigenstate.org/notes/seccomp
+int main(int argc, char **argv) {
+
+  // The idea behind working with wand this way is that it allows us to test
+  // running all convert operations without requiring one to modify/rebuild
+  // magickwand on changes. After a policy is verified as being good enough, it
+  // could be pulled in.
+
+  int sc = install_seccomp();
+  if (sc != 0) {
+    printf("failed\n");
+    exit(1);
+  }
+
+
+}
