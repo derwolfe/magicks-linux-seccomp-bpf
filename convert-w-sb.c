@@ -24,18 +24,20 @@ int install_seccomp() {
   rc = seccomp_arch_add(ctx, SCMP_ARCH_X86);
   if (rc != 0) { goto out; };
 
-  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
-  // if (rc != 0) { goto out; };
-  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
-  // if (rc != 0) { goto out; };
-  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
-  // if (rc != 0) { goto out; };
-  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 1);
-  // if (rc != 0) { goto out; };
-  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
-  // if (rc != 0) { goto out; };
-  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
-  // if (rc != 0) { goto out; };
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
+  if (rc != 0) { goto out; };
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
+  if (rc != 0) { goto out; };
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
+  if (rc != 0) { goto out; };
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
+  if (rc != 0) { goto out; };
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
+  if (rc != 0) { goto out; };
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
+  if (rc != 0) { goto out; };
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
+  if (rc != 0) { goto out; };
 
   rc = seccomp_load(ctx);
   if (rc != 0) { goto out; };
@@ -54,9 +56,7 @@ int main(int argc, char **argv) {
     printf("failed\n");
     exit(1);
   }
-  printf("I might not be shown\n");
-
-  // ConvertImageCommand(NULL, 1, NULL, NULL, NULL);
+  ConvertImageCommand(NULL, 1, NULL, NULL, NULL);
 }
 
 // mostly taken from https://eigenstate.org/notes/seccomp
