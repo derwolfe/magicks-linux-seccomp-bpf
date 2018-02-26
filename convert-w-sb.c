@@ -18,48 +18,46 @@
 
 int install_seccomp() {
   int rc = -1;
-
   // reject all by default
-  scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_KILL);
+  scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_ALLOW);
   rc = seccomp_arch_add(ctx, SCMP_ARCH_X86);
   if (rc != 0) {
     goto out;
   };
 
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
-  if (rc != 0) {
-    goto out;
-  };
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
-  if (rc != 0) {
-    goto out;
-  };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(creat), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
+  // if (rc != 0) {
+  //   goto out;
+  // };
 
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 1,
-                        SCMP_A0(SCMP_CMP_EQ, STDERR_FILENO));
-  if (rc != 0) {
-    goto out;
-  };
   rc = seccomp_load(ctx);
   if (rc != 0) {
     goto out;
