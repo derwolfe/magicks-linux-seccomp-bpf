@@ -83,7 +83,8 @@ failed:
 int main(int argc, char *argv[]) {
   if (install_syscall_reporter()) return 1;
   if (install_syscall_filter()) return 1;
-
+  printf("running\n");
   convert_image("../diaper.jpg", "../tiny_diaper.jpg");
+  printf("done\n");
   return 0;
 }
