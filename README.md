@@ -12,4 +12,4 @@
 
 ### I want to run this. How do I?
 
-I've setup a Dockerfile to use an unstable debian release and install most of the things I needed to use when in the container and running it. The most helpful commands are `./doc-rebuild` and `./dock-run`. These do what they sound like. Since the files are shared, I just edit using my normal editor from the host.
+I've setup a Dockerfile to use an unstable debian release and install most of the things I needed to use when in the container and running it. The most helpful commands are `./doc-rebuild.sh` and `./dock-run.sh`. These do what they sound like. Since the files are shared, I just edit using my normal editor from the host.
