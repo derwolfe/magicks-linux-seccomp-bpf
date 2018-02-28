@@ -2,7 +2,7 @@
 
 ### Goal: learn enough about seccomp-bpf to be able to help write a sandbox for some ImageMagick code.
 
-### Things I've tried.
+### Things I've tried. Things that are being worked on.
 
 1. Started out by reading https://blog.yadutaf.fr/2014/05/29/introduction-to-seccomp-bpf-linux-syscall-filter/.
 2. Went to Kees Cook's article on using seccomp-bpf https://outflux.net/teach-seccomp/. Tooled around with the example code.
@@ -10,6 +10,7 @@
 4. Read over http://man7.org/conf/lpc2015/limiting_kernel_attack_surface_with_seccomp-LPC_2015-Kerrisk.pdf
 5. Went back to Kees' code and realized that I hadn't understood it. This time around I went through and made a similar policy to what I tried in (3). This works. Next I would like to work on restricting file writes.
 6. Starting to work on porting things to libseccomp.
+7. Found Paul Moore's presentation on state of seccomp-2 and libseccomp, http://www.paul-moore.com/docs/devconf-syscall_filtering-pmoore-012014-r1.pdf
 
 ### I want to run this. How do I?
 
