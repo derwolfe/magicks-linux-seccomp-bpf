@@ -1,1 +1,7 @@
 convert-w-sb
+**.swp
+tiny_diaper.jpg
+**.o
+seccomp-bpf/config.log
+seccomp-bpf/config.status
+seccomp-bpf/example
