@@ -9,6 +9,7 @@
 3. Attempted to write a sandbox policy using libssecomp, got confused by not being able to inspect the syscalls that were failing. I'm sure I was setting up auditing/logging/etc wrong, but this was challenging. I straced the non-sandboxed program and then tried to add policies for each unique syscall. This _still_ failed.
 4. Read over http://man7.org/conf/lpc2015/limiting_kernel_attack_surface_with_seccomp-LPC_2015-Kerrisk.pdf
 5. Went back to Kees' code and realized that I hadn't understood it. This time around I went through and made a similar policy to what I tried in (3). This works. Next I would like to work on restricting file writes.
+6. Starting to work on porting things to libseccomp.
 
 ### I want to run this. How do I?
 

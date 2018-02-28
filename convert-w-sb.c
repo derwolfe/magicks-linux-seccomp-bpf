@@ -1,10 +1,10 @@
 #include <errno.h>
+#include <fcntl.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #include <sys/prctl.h>
 #include <sys/syscall.h>
@@ -16,7 +16,6 @@
 #include <seccomp.h>
 
 #include <ImageMagick-6/wand/MagickWand.h>
-
 
 int install_seccomp(char *path_a, char *path_b) {
   int rc = -1;
@@ -30,138 +29,33 @@ int install_seccomp(char *path_a, char *path_b) {
     return -1;
   }
 
-  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 0); 
-  if (rc != 0) {
-    goto out;
-  };
-
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 1, */
-  /*                       SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_b)); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 1, */
-  /*                       SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_a)); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 1, */
-  /*                       SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_b)); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(creat), 1, */
-  /*                       SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t)path_b)); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(access), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(arch_prctl), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(futex), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getcwd), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getdents), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getrlimit), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(gettimeofday), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(futex), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(readlink), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigaction), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigprocmask), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sched_getaffinity), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_robust_list), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_tid_address), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(stat), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sysinfo), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(times), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
-  /* rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0); */
-  /* if (rc != 0) { */
-  /*   goto out; */
-  /* }; */
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigreturn), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sigreturn), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(openat), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(times), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getcwd), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getpid), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(readlink), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(stat), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(access), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sysinfo), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(prlimit64), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lstat), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(futex), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_robust_list), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
 
   rc = seccomp_load(ctx);
   if (rc < 0) {
