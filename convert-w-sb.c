@@ -33,7 +33,10 @@ int install_seccomp(char *path_a, char *path_b) {
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sigreturn), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit), 0);
+
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
+
+  // you can constrain what it writes to
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(openat), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0);
@@ -56,11 +59,26 @@ int install_seccomp(char *path_a, char *path_b) {
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_robust_list), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
-
+  // needed for export, nt convert
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(dup), 0);
+  rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fcntl), 0);
   rc = seccomp_load(ctx);
   if (rc < 0) {
     goto out;
   };
+
+  int filter_fd = open("/tmp/seccomp_filter.pfc", O_WRONLY | O_TRUNC);
+  if (filter_fd == -1) {
+    rc = -errno;
+    goto out;
+  }
+
+  rc = seccomp_export_pfc(ctx, filter_fd);
+  if (rc < 0) {
+    close(filter_fd);
+    goto out;
+  }
+  close(filter_fd);
 
   return 0;
 
@@ -107,9 +125,11 @@ int main(int argc, char **argv) {
   char *from = "diaper.jpg";
   char *to = "tiny_diaper.jpg";
 
+  printf("before\n");
   int sc = install_seccomp(to, from);
   if (sc != 0) {
     exit(1);
   }
   convert_image(to, from);
+  printf("done!\n");
 }
