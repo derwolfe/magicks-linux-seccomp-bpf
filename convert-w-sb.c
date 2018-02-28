@@ -19,6 +19,7 @@
 
 int install_seccomp(char *path_a, char *path_b) {
   int rc = -1;
+  char export_file[] = "/tmp/seccomp_filter.pfc";
 
   prctl(PR_SET_NO_NEW_PRIVS, 1);
   prctl(PR_SET_DUMPABLE, 0);
@@ -67,7 +68,7 @@ int install_seccomp(char *path_a, char *path_b) {
     goto out;
   };
 
-  int filter_fd = open("/tmp/seccomp_filter.pfc", O_WRONLY | O_TRUNC);
+  int filter_fd = open(export_file, O_WRONLY | O_TRUNC | O_CREAT);
   if (filter_fd == -1) {
     rc = -errno;
     goto out;
