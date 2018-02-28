@@ -5,7 +5,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <linux/seccomp.h> header file. */
-#define HAVE_LINUX_SECCOMP_H 1
+/* #undef HAVE_LINUX_SECCOMP_H */
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
