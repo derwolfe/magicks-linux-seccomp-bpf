@@ -12,4 +12,4 @@ example: example.o syscall-reporter.o convert-w-sb.o
 
 .PHONY: clean
 clean:
-	rm -f example example.o
+	rm -f example *.o 
