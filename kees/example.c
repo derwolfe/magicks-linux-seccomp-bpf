@@ -18,6 +18,7 @@
 #include "config.h"
 #include "seccomp-bpf.h"
 #include "syscall-reporter.h"
+#include "convert-w-sb.h"
 
 static int install_syscall_filter(void)
 {
@@ -66,25 +67,11 @@ failed:
 
 int main(int argc, char *argv[])
 {
-	char buf[1024];
-
 	if (install_syscall_reporter())
 		return 1;
 	if (install_syscall_filter())
 		return 1;
 
-	printf("Type stuff here: ");
-	fflush(NULL);
-	buf[0] = '\0';
-	fgets(buf, sizeof(buf), stdin);
-	printf("You typed: %s", buf);
-
-	printf("And now we fork, which should do quite the opposite ...\n");
-	fflush(NULL);
-	sleep(1);
-
-	fork();
-	printf("You should not see this because I'm dead.\n");
-
+  convert_image("../diaper.jpg", "../tiny_diaper.jpg");
 	return 0;
 }
