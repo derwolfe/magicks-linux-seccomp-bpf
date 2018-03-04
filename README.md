@@ -11,6 +11,9 @@
 5. Went back to Kees' code and realized that I hadn't understood it. This time around I went through and made a similar policy to what I tried in (3). This works. Next I would like to work on restricting file writes.
 6. Starting to work on porting things to libseccomp.
 7. Found Paul Moore's presentation on state of seccomp-2 and libseccomp, http://www.paul-moore.com/docs/devconf-syscall_filtering-pmoore-012014-r1.pdf
+8. Reading some of the source for chrome and firefox's sandbox. They use the bpf dsl and policy generator. Examples:
+- https://github.com/chromium/chromium/blob/master/content/gpu/gpu_sandbox_hook_linux.cc
+- https://github.com/chromium/chromium/blob/master/components/nacl/loader/sandbox_linux/nacl_bpf_sandbox_linux.cc
 
 ### I want to run this. How do I?
 
