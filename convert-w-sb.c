@@ -19,7 +19,7 @@
 
 int install_seccomp(char *path_a, char *path_b) {
   int rc = -1;
-  char export_file[] = "/tmp/seccomp_filter.pfc";
+  //char export_file[] = "/tmp/seccomp_filter.pfc";
 
   prctl(PR_SET_NO_NEW_PRIVS, 1);
   prctl(PR_SET_DUMPABLE, 0);
@@ -38,7 +38,11 @@ int install_seccomp(char *path_a, char *path_b) {
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
 
   // you can constrain what it writes to
+  // rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 2,
+  //                       SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t) path_a),
+  //                       SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t) path_b));
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
+
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(openat), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0);
   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
@@ -68,18 +72,18 @@ int install_seccomp(char *path_a, char *path_b) {
     goto out;
   };
 
-  int filter_fd = open(export_file, O_WRONLY | O_TRUNC | O_CREAT);
-  if (filter_fd == -1) {
-    rc = -errno;
-    goto out;
-  }
+  // int filter_fd = open(export_file, O_WRONLY | O_TRUNC | O_CREAT);
+  // if (filter_fd == -1) {
+  //   rc = -errno;
+  //   goto out;
+  // }
 
-  rc = seccomp_export_pfc(ctx, filter_fd);
-  if (rc < 0) {
-    close(filter_fd);
-    goto out;
-  }
-  close(filter_fd);
+  // rc = seccomp_export_pfc(ctx, filter_fd);
+  // if (rc < 0) {
+  //   close(filter_fd);
+  //   goto out;
+  // }
+  // close(filter_fd);
 
   return 0;
 
@@ -131,6 +135,6 @@ int main(int argc, char **argv) {
   if (sc != 0) {
     exit(1);
   }
-  convert_image(to, from);
+  convert_image(from, to);
   printf("done!\n");
 }
